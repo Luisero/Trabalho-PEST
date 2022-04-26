@@ -30,8 +30,7 @@ html_msg =  '''<html>
         </html>'''
 
 
-if __name__ == '__main__':
-    enviarEmail('concessionariasolquente@gmail.com','solquente13',html_msg,'brenixkts@gmail.com','Compra de carro efetuada')
+
 
 
 
