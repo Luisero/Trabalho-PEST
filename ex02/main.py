@@ -1,4 +1,5 @@
 
+from turtle import mode
 import rich
 from rich.console import Console
 from rich.table import Table
@@ -56,12 +57,15 @@ def cadastrar():
         valor_fabrica = inputFloat('Qual o valor de fabrica? ')
         quantidade = inputInt('Qual a quantidade?')
         paraPCD = inputEscolha('Esse carro é para PCD? [green][0]Sim[green/] [blue][1]Não[blue/]',escolhas=['0','1'], erro='Valor inválido! Tente novamente')
-
+        if paraPCD == '0':
+            paraPCD='Sim'
+        else:
+            paraPCD = 'Não'
         preco = 0
         if paraPCD=='s':
-            preco = valor_fabrica*1.15
+            preco = valor_fabrica*1.15 #o preço é o valor de fabrica + 15%
         else:
-            preco = valor_fabrica*1.3
+            preco = valor_fabrica*1.3 #o preoço é o valor de fabrica + 30%
         mod_carro['Marca'] = marca
         mod_carro['Modelo'] = modelo
         mod_carro['Valor_fabrica'] = valor_fabrica
@@ -129,8 +133,12 @@ def inputFloat(texto):
 def printCarros(lista_carro):
     menu_carros = Table(title='Carros cadastrados')
     menu_carros.add_column('Marca')
-    menu_carros.add_column()
+    menu_carros.add_column('Modelo')
+    menu_carros.add_column('Preço')
+    menu_carros.add_column('Quantidade')
+    menu_carros.add_column('Valor de fábrica')
+    menu_carros.add_column('Para PCD?')
     for modelo in lista_carro:
-        
-
+        menu_carros.add_row(modelo['Marca'], modelo['Modelo'], '[green]R$'+str(modelo['Preco'])+'[green/]', '[blue]'+str(modelo['Quantidade'])+'[blue/]', str(modelo['Valor_fabrica']), modelo['Para_PCD'])
+    console.print(menu_carros)
 menu() 
