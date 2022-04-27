@@ -16,72 +16,121 @@ quantidade: int
 '''
 carros = list()
 def menu():
-   
-    menu = Table(title='Concessionária Sol quente')
-    menu.add_column('Menu vendedor')
-    menu.add_column('Menu comprador')
-    menu.add_row('Cadastrar carro','Consultar carro')
-    menu.add_row('Editar','Comprar carro')
-    console.print(menu)
-    mode = inputEscolha('Digite aqui para se logar: [0]Vendedor [1]|Ciente: ', ['0','1'], 'Valor inválido! Tente novamente')
-    #modo vendedor
-    if mode == '0':
-        #menu de vendas
-        continuar = 's'
-        while continuar == 's':
-            modo = inputEscolha('O que deseja fazer? [0]Cadastrar [1]Editar: ',['0','1'], 'Valor inválido! Tente novamente')
-            #modo cadastrar
-            if modo == '0':
-                marca = inputText('Qual a marca do carro? ')
-                modelo = inputText('Qual o modelo do carro? ')
-                valor_fabrica = inputFloat()
-
-            else: #modo editar
-                if len(carros) == 0:
-                    print('Nenhum carro para editar.')
-                else: 
-                    printCarros(carros)
-
-            continuar = inputEscolha('Deseja fazer mais alguma coisa? [s]Cadastrar ou editar [n]Voltar ao menu principal: ',['s','n'], 'Valor inválido! Tente novamente')
-
+   while True:
+        menu = Table(title='Concessionária Sol quente')
+        menu.add_column('Menu vendedor')
+        menu.add_column('Menu comprador')
+        menu.add_row('Cadastrar carro','Consultar carro')
+        menu.add_row('Editar','Comprar carro')
+        console.print(menu)
+        mode = inputEscolha('Digite aqui para se logar: [green][0][green/]Vendedor [blue][1][blue/]Cliente ', escolhas=['0','1'], erro='Valor inválido! Tente novamente')
+        #modo vendedor
+        if mode == '0':
+            #menu de vendas
+            continuar = 's'
+            while continuar == 's':
+                modo = inputEscolha('O que deseja fazer? [green][0][green/]Cadastrar [blue][1][blue/]Editar ',escolhas=['0','1'], erro='Valor inválido! Tente novamente')
+                #modo cadastrar
+                if modo == '0':
+                    cadastrar()
                     
-    else: #modo cliente
-        print('Cliente')
-    
+                else: #modo editar
+                    editar()
+                break
+
+                
+                
+        else: #modo cliente
+            print('Cliente')
+
+
+
+
+
+def cadastrar():
+    continuar  = 's'
+    while continuar == 's':
+        mod_carro.clear()
+        marca = inputText('Qual a marca do carro? ').title()
+        modelo = inputText('Qual o modelo do carro? ').title()
+        valor_fabrica = inputFloat('Qual o valor de fabrica? ')
+        quantidade = inputInt('Qual a quantidade?')
+        paraPCD = inputEscolha('Esse carro é para PCD? [green][0]Sim[green/] [blue][1]Não[blue/]',escolhas=['0','1'], erro='Valor inválido! Tente novamente')
+
+        preco = 0
+        if paraPCD=='s':
+            preco = valor_fabrica*1.15
+        else:
+            preco = valor_fabrica*1.3
+        mod_carro['Marca'] = marca
+        mod_carro['Modelo'] = modelo
+        mod_carro['Valor_fabrica'] = valor_fabrica
+        mod_carro['Quantidade'] = quantidade
+        mod_carro['Para_PCD'] = paraPCD
+        mod_carro['Preco'] = preco
+        carros.append(mod_carro.copy())
+        continuar = inputEscolha('Deseja continuar? [green][0]Sim[green/] [blue][1]Não[blue/]',escolhas=['0','1'], erro='[on red]Valor inválido! Tente novamente.[on red/]')
+
+
+def editar():
+    if len(carros) == 0:
+        print('Nenhum carro para editar.')
+    else: 
+        printCarros(carros)
+
+
+
+
+#############INPUTS##################################################################
 def inputEscolha(texto, escolhas, erro):
-    res = input(texto).lower()
+    res = Prompt.ask(texto).lower()
 
     while res != escolhas[0] and res != escolhas[1]:
-        print(erro)
-        res = input(texto).lower()
+        console.print(erro)
+        res = Prompt.ask(texto).lower()
     if res == escolhas[0]:
         return escolhas[0]
     else:
         return escolhas[1]
 
-def printCarros(lista_carro):
-    for modelo in lista_carro:
-        print(f"Marca: {modelo['Marca']}")
 
 def inputText(texto):
     res = Prompt.ask(texto)
     while True:
         try:
             res = int(res)
-            res = Prompt.ask('[on red]Valor inválido! Tente novamente.[on red/]')
+            res = Prompt.ask('[on red]Valor inválido! Tente novamente.[on red/] ')
 
         except:
             return res
     
-def inputInt():
-    pass
+def inputInt(texto):
+     while True:
+        res = Prompt.ask(texto)
+        try:
+            res = int(res)
+        except ValueError:
+            console.print('[on red]Valor inválido! Tente novamente.[on red/] ')
+        if(type(res) == int):
+            return res
+            break
+        
 
-def inputFloat():
-    try:
-        res = FloatPrompt.ask()
-    except InvalidResponse('fdf'):
-        return res
-      
-
+def inputFloat(texto):
+    while True:
+        try:
+            res = float(Prompt.ask(texto))
+        except ValueError:
+            console.print('[on red]Valor inválido! Tente novamente.[on red/] ')
+        if(type(res) == float):
+            return res
+            break
+########################################################################################
+def printCarros(lista_carro):
+    menu_carros = Table(title='Carros cadastrados')
+    menu_carros.add_column('Marca')
+    menu_carros.add_column()
+    for modelo in lista_carro:
+        
 
 menu() 
