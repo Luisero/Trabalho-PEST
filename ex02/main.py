@@ -1,10 +1,8 @@
-
-from turtle import mode
-import rich
 from rich.console import Console
 from rich.table import Table
-from rich.prompt import Prompt, FloatPrompt, InvalidResponse
-
+from rich.prompt import Prompt
+from clear import clear
+from bemvindo import boasVindas
 console = Console()
 mod_carro = dict()
 '''
@@ -16,15 +14,18 @@ preco: float
 quantidade: int
 '''
 carros = list()
+clear() 
+boasVindas('Bem vindo!','blue')
 def menu():
    while True:
+        
         menu = Table(title='Concessionária Sol quente')
         menu.add_column('Menu vendedor')
         menu.add_column('Menu comprador')
         menu.add_row('Cadastrar carro','Consultar carro')
         menu.add_row('Editar','Comprar carro')
         console.print(menu)
-        mode = inputEscolha('Digite aqui para se logar: [green][0][green/]Vendedor [blue][1][blue/]Cliente ', escolhas=['0','1'], erro='Valor inválido! Tente novamente')
+        mode = inputEscolha('Digite aqui para se logar: [green][0][green/]Vendedor [blue][1][blue/]Cliente ', escolhas=['0','1'], erro='[on red]Valor inválido! Tente novamente[on red/]')
         #modo vendedor
         if mode == '0':
             #menu de vendas
@@ -52,8 +53,26 @@ def cadastrar():
     continuar  = 's'
     while continuar == 's':
         mod_carro.clear()
+
         marca = inputText('Qual a marca do carro? ').title()
         modelo = inputText('Qual o modelo do carro? ').title()
+        #verificar se o modelo já está cadastrado
+        igual = True
+        while igual:
+            if len(carros) != 0:
+                for carro in carros:
+                    if modelo == carro['Modelo']:
+                        igual = True
+                        console.print('[on red]Carro já cadastrado![on red/]')
+                        modelo = inputText('Qual o modelo do carro? ').title()
+                        if modelo != carro['Modelo']:
+                            igual = False
+                    else:
+                        igual = False
+                
+            else:
+                igual = False
+
         valor_fabrica = inputFloat('Qual o valor de fabrica? ')
         quantidade = inputInt('Qual a quantidade?')
         paraPCD = inputEscolha('Esse carro é para PCD? [green][0]Sim[green/] [blue][1]Não[blue/]',escolhas=['0','1'], erro='Valor inválido! Tente novamente')
@@ -62,10 +81,11 @@ def cadastrar():
         else:
             paraPCD = 'Não'
         preco = 0
-        if paraPCD=='s':
-            preco = valor_fabrica*1.15 #o preço é o valor de fabrica + 15%
+        if paraPCD=='Sim':
+            preco = f'{valor_fabrica*1.15:.2f}' #o preço é o valor de fabrica + 15%
         else:
-            preco = valor_fabrica*1.3 #o preoço é o valor de fabrica + 30%
+            preco = f'{valor_fabrica*1.3:.2f}' #o preoço é o valor de fabrica + 30%
+        preco = float(preco)
         mod_carro['Marca'] = marca
         mod_carro['Modelo'] = modelo
         mod_carro['Valor_fabrica'] = valor_fabrica
@@ -74,24 +94,53 @@ def cadastrar():
         mod_carro['Preco'] = preco
         carros.append(mod_carro.copy())
         continuar = inputEscolha('Deseja continuar? [green][0]Sim[green/] [blue][1]Não[blue/]',escolhas=['0','1'], erro='[on red]Valor inválido! Tente novamente.[on red/]')
+        if continuar == '0':
+            continuar = 's'
+        else:
+            continuar = 'n'
 
 
 def editar():
-    if len(carros) == 0:
-        print('Nenhum carro para editar.')
-    else: 
-        printCarros(carros)
+    continuar = '0'
+    while continuar == '0':
+        if len(carros) == 0:
+            console.print('[yellow]Nenhum carro para editar.[yellow/]')
+        else: 
+            clear()
+            printCarros(carros)
+            modelo = inputText('Qual o modelo do carro para editar? ').title()
+            achou = False
+            for carro in carros:
+                if carro['Modelo'] == modelo:
+                    achou = True
+            while not achou:
+                console.print('[on red]Carro não encontrado![on red/]')
+                modelo = inputText('Qual o modelo do carro para editar? ').title()
+                for carro in carros:
+                    if carro['Modelo'] == modelo:
+                        achou = True
+            for i,modelo_carro in enumerate(carros):
+                
+                if modelo_carro['Modelo'] == modelo:
+                    achou = True
+                    chave = inputEscolha('O que você que editar? [blue][Preco][blue/] [green][Quantidade][green/]', escolhas=['Preco','Quantidade'], erro='[on red]Valor inválido![on red/]')
+                    if chave == 'Preco':
+                        modelo_carro['Preco'] = inputFloat('Digite o novo preço ')
+                    else:
+                        modelo_carro['Quantidade'] = inputInt('Digite a nova quantidade')
+        continuar = inputEscolha('Deseja continuar editando carros? [green][0]Sim[green/] [blue][1]Não[blue/]',escolhas=['0','1'], erro='[on red]Valor inválido[on red/]')
+                
 
 
 
 
 #############INPUTS##################################################################
 def inputEscolha(texto, escolhas, erro):
-    res = Prompt.ask(texto).lower()
+    res = Prompt.ask(texto).title()
 
     while res != escolhas[0] and res != escolhas[1]:
         console.print(erro)
-        res = Prompt.ask(texto).lower()
+        res = Prompt.ask(texto).title()
     if res == escolhas[0]:
         return escolhas[0]
     else:
@@ -99,7 +148,7 @@ def inputEscolha(texto, escolhas, erro):
 
 
 def inputText(texto):
-    res = Prompt.ask(texto)
+    res = Prompt.ask(texto).title()
     while True:
         try:
             res = int(res)
@@ -107,6 +156,7 @@ def inputText(texto):
 
         except:
             return res
+            
     
 def inputInt(texto):
      while True:
@@ -139,6 +189,11 @@ def printCarros(lista_carro):
     menu_carros.add_column('Valor de fábrica')
     menu_carros.add_column('Para PCD?')
     for modelo in lista_carro:
-        menu_carros.add_row(modelo['Marca'], modelo['Modelo'], '[green]R$'+str(modelo['Preco'])+'[green/]', '[blue]'+str(modelo['Quantidade'])+'[blue/]', str(modelo['Valor_fabrica']), modelo['Para_PCD'])
+        pcd_text = ''
+        if modelo['Para_PCD'] == 'Sim':
+            pcd_text = f'[blue]{modelo["Para_PCD"]}[blue/]'
+        else:
+            pcd_text = f'[yellow]{modelo["Para_PCD"]}[yellow/]'
+        menu_carros.add_row(modelo['Marca'], modelo['Modelo'], '[green]R$'+str(modelo['Preco'])+'[green/]', '[blue]'+str(modelo['Quantidade'])+'[blue/]', 'R$'+str(modelo['Valor_fabrica']), pcd_text)
     console.print(menu_carros)
 menu() 
