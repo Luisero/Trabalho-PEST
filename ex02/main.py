@@ -6,7 +6,7 @@ from bemvindo import boasVindas
 console = Console()
 mod_carro = dict()
 '''
-Nome do carro:string
+Modelo do carro:string
 Marca: string
 Valor de fábrica: float
 ParaPCD : bool
@@ -15,7 +15,7 @@ quantidade: int
 '''
 carros = list()
 clear() 
-boasVindas('Bem vindo!','blue')
+#boasVindas('Bem vindo!','blue')
 def menu():
    while True:
         
@@ -38,12 +38,29 @@ def menu():
                     
                 else: #modo editar
                     editar()
-                break
+                break    
 
-                
-                
-        else: #modo cliente
-            print('Cliente')
+
+        else: #modo cliente 
+            res = inputEscolha('Deseja consultar um carro? [green][0]Sim[green/] [blue][1]Sair ao menu[blue/]', escolhas=['0','1'], erro='[on red]Valor inválido. Tente novamente[on red/]')
+
+            if res == '1': #sair ao menu
+                pass
+            else: #Consultar o carro
+    
+                if len(carros) == 0:
+                    console.print('[yellow]Nenhum carro disponível.[yellow/]')
+                else:
+                    cliente_pcd = inputEscolha('Vocé é PCD? [green][0]Sim[green/] [blue][1]Não [blue/]', escolhas=['0','1'], erro='[on red]Valor inválido. Tente novamente[on red/]')
+                    if cliente_pcd == '0':
+                        cliente_pcd = True
+                    else:
+                        cliente_pcd = False
+                        
+                    def consultar(cliente_pcd):
+                        printCarros(carros)
+                    
+
 
 
 
@@ -120,7 +137,6 @@ def editar():
                     if carro['Modelo'] == modelo:
                         achou = True
             for i,modelo_carro in enumerate(carros):
-                
                 if modelo_carro['Modelo'] == modelo:
                     achou = True
                     chave = inputEscolha('O que você que editar? [blue][Preco][blue/] [green][Quantidade][green/]', escolhas=['Preco','Quantidade'], erro='[on red]Valor inválido![on red/]')
@@ -130,7 +146,28 @@ def editar():
                         modelo_carro['Quantidade'] = inputInt('Digite a nova quantidade')
         continuar = inputEscolha('Deseja continuar editando carros? [green][0]Sim[green/] [blue][1]Não[blue/]',escolhas=['0','1'], erro='[on red]Valor inválido[on red/]')
                 
-
+def consultar():
+    clear()
+    printCarros(carros)
+    modelo = inputText('Qual o modelo do carro para editar? ').title()
+    achou = False
+    for carro in carros:
+        if carro['Modelo'] == modelo:
+            achou = True
+    while not achou:
+        console.print('[on red]Carro não encontrado![on red/]')
+        modelo = inputText('Qual o modelo do carro para editar? ').title()
+        for carro in carros:
+            if carro['Modelo'] == modelo:
+                achou = True
+    for i,modelo_carro in enumerate(carros):
+        if modelo_carro['Modelo'] == modelo:
+            achou = True
+            chave = inputEscolha('O que você que editar? [blue][Preco][blue/] [green][Quantidade][green/]', escolhas=['Preco','Quantidade'], erro='[on red]Valor inválido![on red/]')
+            if chave == 'Preco':
+                modelo_carro['Preco'] = inputFloat('Digite o novo preço ')
+            else:
+                modelo_carro['Quantidade'] = inputInt('Digite a nova quantidade')
 
 
 
