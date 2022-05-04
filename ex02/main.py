@@ -9,7 +9,7 @@ mod_carro = dict()
 Modelo do carro:string
 Marca: string
 Valor de fábrica: float
-ParaPCD : bool
+ParaPCD : string (sim/nao)
 preco: float
 quantidade: int
 '''
@@ -56,9 +56,9 @@ def menu():
                         cliente_pcd = True
                     else:
                         cliente_pcd = False
-                        
-                    def consultar(cliente_pcd):
-                        printCarros(carros)
+
+                    consultar(cliente_pcd)
+                     
                     
 
 
@@ -146,28 +146,44 @@ def editar():
                         modelo_carro['Quantidade'] = inputInt('Digite a nova quantidade')
         continuar = inputEscolha('Deseja continuar editando carros? [green][0]Sim[green/] [blue][1]Não[blue/]',escolhas=['0','1'], erro='[on red]Valor inválido[on red/]')
                 
-def consultar():
+def consultar(cliente_pcd):
     clear()
-    printCarros(carros)
-    modelo = inputText('Qual o modelo do carro para editar? ').title()
-    achou = False
-    for carro in carros:
-        if carro['Modelo'] == modelo:
-            achou = True
-    while not achou:
-        console.print('[on red]Carro não encontrado![on red/]')
-        modelo = inputText('Qual o modelo do carro para editar? ').title()
-        for carro in carros:
-            if carro['Modelo'] == modelo:
-                achou = True
-    for i,modelo_carro in enumerate(carros):
-        if modelo_carro['Modelo'] == modelo:
-            achou = True
-            chave = inputEscolha('O que você que editar? [blue][Preco][blue/] [green][Quantidade][green/]', escolhas=['Preco','Quantidade'], erro='[on red]Valor inválido![on red/]')
-            if chave == 'Preco':
-                modelo_carro['Preco'] = inputFloat('Digite o novo preço ')
-            else:
-                modelo_carro['Quantidade'] = inputInt('Digite a nova quantidade')
+    carros_pcd = []
+    carros_nopcd = []
+
+    for carro in carros: #cria uma lista de carros pcd e de não pcd
+        if carro['Para_PCD'] == 'Sim':
+            carros_pcd.append(carro) 
+        else:
+            carros_nopcd.append(carro)
+    if carros_pcd: #se o cliente for pcd
+        printCarros(carros_pcd)
+        quercomprar = inputEscolha('Quer comprar um carro? [green][0]Sim[green/] [blue][1]Não[blue/]', escolhas=['0','1'], erro='[on red]Valor inválido! Tente novamente [on red/]')
+        if quercomprar == '0':
+            
+            modelo = inputText('Qual o modelo do carro quer comprar? ').title()
+            achou = False
+            for carro in carros:
+                if carro['Modelo'] == modelo:
+                    achou = True
+            while not achou:
+                console.print('[on red]Carro não encontrado![on red/]')
+                modelo = inputText('Qual o modelo do carro comprar? ').title()
+                for carro in carros:
+                    if carro['Modelo'] == modelo:
+                        achou = True
+            for i,modelo_carro in enumerate(carros):
+                if modelo_carro['Modelo'] == modelo:
+                    achou = True
+                   
+        else:
+            console.print('[on yellow]Tudo bem[on yellow/]')
+        printCarros(carros_pcd)
+    else:#se o cliente não for pcd
+        printCarros(carros_nopcd)
+
+
+    
 
 
 
