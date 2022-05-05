@@ -1,3 +1,4 @@
+from curses.ascii import isspace
 from rich.console import Console
 from rich.table import Table
 from rich.prompt import Prompt
@@ -91,7 +92,13 @@ def cadastrar():
                 igual = False
 
         valor_fabrica = inputFloat('Qual o valor de fabrica? ')
+        while valor_fabrica <= 0:
+            console.print('[on red]Valor inválido. Tente novamente[on red/]]')
+            valor_fabrica = inputFloat('Qual o valor de fabrica? ')
         quantidade = inputInt('Qual a quantidade?')
+        while quantidade <=0:
+            console.print('[on red]Valor inválido. Tente novamente[on red/]]')
+            quantidade = inputInt('Qual a quantidade?')
         paraPCD = inputEscolha('Esse carro é para PCD? [green][0]Sim[green/] [blue][1]Não[blue/]',escolhas=['0','1'], erro='Valor inválido! Tente novamente')
         if paraPCD == '0':
             paraPCD='Sim'
@@ -121,7 +128,7 @@ def editar():
     continuar = '0'
     while continuar == '0':
         if len(carros) == 0:
-            console.print('[yellow]Nenhum carro para editar.[yellow/]')
+            console.print('[on yellow]Nenhum carro para editar.[on yellow/]')
         else: 
             clear()
             printCarros(carros)
@@ -141,9 +148,18 @@ def editar():
                     achou = True
                     chave = inputEscolha('O que você que editar? [blue][Preco][blue/] [green][Quantidade][green/]', escolhas=['Preco','Quantidade'], erro='[on red]Valor inválido![on red/]')
                     if chave == 'Preco':
-                        modelo_carro['Preco'] = inputFloat('Digite o novo preço ')
+                        preco =  inputFloat('Digite o novo preço ')
+                        while preco <= 0:
+                            console.print('[on red]Valor inválido. Tente novamente[on red/]]')
+                            preco =  inputFloat('Digite o novo preço ')
+                        modelo_carro['Preco'] = preco
+
                     else:
-                        modelo_carro['Quantidade'] = inputInt('Digite a nova quantidade')
+                        quantidade = inputInt('Digite a nova quantidade')
+                        while quantidade <= 0:
+                            console.print('[on red]Valor inválido. Tente novamente[on red/]]')
+                            quantidade = inputInt('Digite a nova quantidade')
+                        modelo_carro['Quantidade'] = quantidade
         continuar = inputEscolha('Deseja continuar editando carros? [green][0]Sim[green/] [blue][1]Não[blue/]',escolhas=['0','1'], erro='[on red]Valor inválido[on red/]')
                 
 def consultar(cliente_pcd):
@@ -160,46 +176,49 @@ def consultar(cliente_pcd):
         printCarros(carros_pcd)
         quercomprar = inputEscolha('Quer comprar um carro? [green][0]Sim[green/] [blue][1]Não[blue/]', escolhas=['0','1'], erro='[on red]Valor inválido! Tente novamente [on red/]')
         if quercomprar == '0':
+           comprar(carros_pcd) 
             
-            modelo = inputText('Qual o modelo do carro quer comprar? ').title()
-            achou = False
-            for carro in carros:
-                if carro['Modelo'] == modelo:
-                    achou = True
-            while not achou:
-                console.print('[on red]Carro não encontrado![on red/]')
-                modelo = inputText('Qual o modelo do carro comprar? ').title()
-                for carro in carros:
-                    if carro['Modelo'] == modelo:
-                        achou = True
-            for i,modelo_carro in enumerate(carros):
-                if modelo_carro['Modelo'] == modelo:
-                    achou = True
-                   
         else:
             console.print('[on yellow]Tudo bem[on yellow/]')
         printCarros(carros_pcd)
     else:#se o cliente não for pcd
         printCarros(carros_nopcd)
 
-def comprar():
-    pass
-    
+def comprar(lista_carros):
+    modelo = inputText('Qual o modelo do carro quer comprar? ').title()
+    achou = False
+    for carro in lista_carros:
+        if carro['Modelo'] == modelo:
+            achou = True
+            quantidade = inputInt('Quantos carros quer comprar? ')
+            while quantidade <= 0 or ((carro['Preco'] - quantidade )<0):
+                console.print('[on red]Valor inválido! Tente novamente [on red/]')
+                quantidade = inputInt('Quantos carros quer comprar? ')
+            
+
+    while not achou:
+        console.print('[on red]Carro não encontrado![on red/]')
+        modelo = inputText('Qual o modelo do carro comprar? ').title()
+        for carro in lista_carros:
+            if carro['Modelo'] == modelo:
+                achou = True
+
+  
 
 
 
 #############INPUTS##################################################################
 def inputEscolha(texto, escolhas, erro):
     res = Prompt.ask(texto).title()
-
-    while res != escolhas[0] and res != escolhas[1]:
-        console.print(erro)
-        res = Prompt.ask(texto).title()
-    if res == escolhas[0]:
-        return escolhas[0]
-    else:
-        return escolhas[1]
-
+    if len(escolhas) == 2:
+        while res != escolhas[0] and res != escolhas[1]:
+            console.print(erro)
+            res = Prompt.ask(texto).title()
+        if res == escolhas[0]:
+            return escolhas[0]
+        else:
+            return escolhas[1]
+    
 
 def inputText(texto):
     res = Prompt.ask(texto).title()
@@ -209,7 +228,11 @@ def inputText(texto):
             res = Prompt.ask('[on red]Valor inválido! Tente novamente.[on red/] ')
 
         except:
-            return res
+            if isSpace(res):
+                res = Prompt.ask('[on red]Valor inválido! Tente novamente.[on red/] ')
+            else:
+                return res
+
             
     
 def inputInt(texto):
@@ -221,18 +244,31 @@ def inputInt(texto):
             console.print('[on red]Valor inválido! Tente novamente.[on red/] ')
         if(type(res) == int):
             return res
-            break
+             
         
 
 def inputFloat(texto):
+    res = Prompt.ask(texto)
     while True:
         try:
-            res = float(Prompt.ask(texto))
-        except ValueError:
+            res = float(res)
+        except :
             console.print('[on red]Valor inválido! Tente novamente.[on red/] ')
+            res = Prompt.ask(texto)
         if(type(res) == float):
             return res
-            break
+            
+def isSpace(texto):
+    espacos = 0
+    for i in range(0, len(texto)):
+        if texto[i:i+1] == ' ':
+            espacos += 1
+
+    if espacos == len(texto):
+       return True
+    else:
+       return False
+
 ########################################################################################
 def printCarros(lista_carro):
     menu_carros = Table(title='Carros cadastrados')
