@@ -14,4 +14,4 @@ def boasVindas(texto,cor):
         clear()
 
 if __name__ == '__main__':
-    boasVindas('Bem vindo','red')
+    boasVindas('Bem vindo','on blue')

@@ -182,7 +182,8 @@ def consultar(cliente_pcd):
     else:#se o cliente não for pcd
         printCarros(carros_nopcd)
 
-
+def comprar():
+    pass
     
 
 
