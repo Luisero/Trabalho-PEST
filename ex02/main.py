@@ -1,4 +1,6 @@
-from curses.ascii import isspace
+from ast import Break
+from email import enviarEmail
+from tkinter.tix import Tree
 from rich.console import Console
 from rich.table import Table
 from rich.prompt import Prompt
@@ -187,14 +189,9 @@ def consultar(cliente_pcd):
 def comprar(lista_carros):
     modelo = inputText('Qual o modelo do carro quer comprar? ').title()
     achou = False
-    for carro in lista_carros:
-        if carro['Modelo'] == modelo:
-            achou = True
-            quantidade = inputInt('Quantos carros quer comprar? ')
-            while quantidade <= 0 or ((carro['Preco'] - quantidade )<0):
-                console.print('[on red]Valor inválido! Tente novamente [on red/]')
-                quantidade = inputInt('Quantos carros quer comprar? ')
-            
+   
+            processoCompra()
+
 
     while not achou:
         console.print('[on red]Carro não encontrado![on red/]')
@@ -202,10 +199,26 @@ def comprar(lista_carros):
         for carro in lista_carros:
             if carro['Modelo'] == modelo:
                 achou = True
-
+                processoCompra(lista_carros)
+        
   
+         
+            
 
 
+def processoCompra(lista_carros):
+     for i, carro in enumerate(lista_carros):
+        if carro['Modelo'] == modelo:
+            achou = True
+            quantidade = inputInt('Quantos carros quer comprar? ')
+            nova_quant = carro['Quantidade'] - quantidade
+            while quantidade <= 0 or nova_quant<0:
+                console.print('[on red]Valor inválido! Tente novamente [on red/]')
+                quantidade = inputInt('Quantos carros quer comprar? ')
+                nova_quant = carro['Quantidade'] - quantidade
+            carro['Quantidade'] = nova_quant
+            console.log('[on green]Compra confirmada![on green/]')
+            email = inputEmail('Digite seu e-mail para receber a nota fiscal: ')
 
 #############INPUTS##################################################################
 def inputEscolha(texto, escolhas, erro):
@@ -268,6 +281,34 @@ def isSpace(texto):
        return True
     else:
        return False
+
+def inputEmail(email):
+    while True:
+        email = inputText('Digite seu e-mail: ').lower()
+
+        email = email.split('@')
+
+        while len(email) !=2:
+            console.print('[on red]Valor inválido! Tente novamente.[on red/]')
+            email = inputText('Digite seu e-mail: ').lower()
+
+            email = email.split('@')
+
+        if len(email) == 2:
+            for i in range(0,2):
+                email[i] = email[i].split('.com')
+            if len(email[1]) == 2:
+                #certo
+                return f'{email[0]}{email[1][0]}'
+            else:
+                console.print('[on red]Valor inválido! Tente novamente.[on red/]')
+            
+
+            
+        
+
+  
+
 
 ########################################################################################
 def printCarros(lista_carro):
