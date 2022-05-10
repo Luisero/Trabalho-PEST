@@ -17,20 +17,3 @@ def enviarEmail(email, senha, html_text, to_email, subject):
     with smtplib.SMTP_SSL('smtp.gmail.com',465) as smtp:
         smtp.login(email, senha)
         smtp.send_message(msg)
-
-html_msg =  '''<html>
-        <h1>Parabéns! Você acaba de comprar um carro de mão!</h1>
-        <ul>
-            <li>Marca: Ford</li>
-            <li>Modelo: DiMão</li>
-            <li>Ano: 2022</li>
-        </ul>
-        <p>Obrigado pela preferência!</p>
-        <p><strong>Concessionária Sol Quente</strong></p>
-        </html>'''
-
-
-
-
-
-

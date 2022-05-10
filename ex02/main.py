@@ -1,21 +1,22 @@
-from ast import Break
-from email import enviarEmail
-from tkinter.tix import Tree
+from emailSender import enviarEmail
 from rich.console import Console
 from rich.table import Table
 from rich.prompt import Prompt
 from clear import clear
 from bemvindo import boasVindas
+
 console = Console()
 mod_carro = dict()
 '''
-Modelo do carro:string
+Modelo:string
 Marca: string
 Valor de fábrica: float
-ParaPCD : string (sim/nao)
-preco: float
-quantidade: int
+Para_PCD : string (sim/nao)
+Preco: float
+Quantidade: int
 '''
+
+
 carros = list()
 clear() 
 #boasVindas('Bem vindo!','blue')
@@ -187,6 +188,7 @@ def consultar(cliente_pcd):
         printCarros(carros_nopcd)
 
 def comprar(lista_carros):
+    
     modelo = inputText('Qual o modelo do carro quer comprar? ').title()
     achou = False
    
@@ -201,16 +203,41 @@ def comprar(lista_carros):
                     quantidade = inputInt('Quantos carros quer comprar? ')
                     nova_quant = carro['Quantidade'] - quantidade
                 carro['Quantidade'] = nova_quant
+                email_d = inputEmail('Digite seu e-mail para receber a nota fiscal')
                 console.log('[on green]Compra confirmada![on green/]')
-                email = inputEmail('Digite seu e-mail para receber a nota fiscal: ')
+
+                preco = carro['Preco']* quantidade
+                datas = pegarData()
+                from infos import email, senha #email e senha do remetente
+                email_r = email
+                senha_r = senha
+                mensagem_html = f'''
+                <h1>Compra de carro efetuada!</h1>
+                <h2>Parabéns! Você acaba de adquirir um {carro['Marca']} {carro['Modelo']} </h2> 
+                <p><strong>Informações: </strong></p>
+                <ul style="list-style-type: none;">
+                    <li>Marca: {carro['Marca']}</li>
+                    <li>Modelo: {carro['Modelo']}</li>
+                    <li>Preco: R${carro['Preco']}</li>
+                    <li>Quantidade: {quantidade}</li>
+                    <li>Para PCD? {carro['Para_PCD']}</li>
+                    <li>Compra feita no dia {datas['Data']} na hora {datas['Hora']}</li>
+
+                </ul>
+
+                <p>Concessionária Sol Quente: saia da sombra com a gente.</p>
+                <p><strong>&copy;Concessionária Sol Quente</strong></p>
+                '''
+                enviarEmail(email_r,senha_r, mensagem_html,email_d,'Carro novo para você!')
+               
                 break
 
-       
-        console.print('[on red]Carro não encontrado![on red/]')
-        modelo = inputText('Qual o modelo do carro comprar? ').title()
-                
-            
-            
+        if not achou:
+                console.print('[on red]Carro não encontrado![on red/]')
+                modelo = inputText('Qual o modelo do carro comprar? ').title()
+    
+
+   
 
 
 
@@ -277,15 +304,16 @@ def isSpace(texto):
     else:
        return False
 
-def inputEmail(email):
+def inputEmail(texto):
+    email = ''
     while True:
-        email = inputText('Digite seu e-mail: ').lower()
+        email = inputText(texto).lower()
 
         email = email.split('@')
 
         while len(email) !=2:
             console.print('[on red]Valor inválido! Tente novamente.[on red/]')
-            email = inputText('Digite seu e-mail: ').lower()
+            email = inputText(texto).lower()
 
             email = email.split('@')
 
@@ -294,15 +322,43 @@ def inputEmail(email):
                 email[i] = email[i].split('.com')
             if len(email[1]) == 2:
                 #certo
-                return f'{email[0]}{email[1][0]}'
+                return f'{email[0][0]}@{email[1][0]}.com'
             else:
                 console.print('[on red]Valor inválido! Tente novamente.[on red/]')
             
 
             
         
+def pegarData():
+    import datetime
+    date = datetime.datetime.now()
 
-  
+    dia = date.day
+    if dia <10:
+        dia = f'0{dia}'
+    mes = f'0{date.month}'
+    ano = date.year
+
+    datastr = f'{dia}/{mes}/{ano}'
+
+    hora = date.hour
+    if hora < 10:
+        hora = f'0{hora}'
+
+    minuto = date.minute
+    if minuto < 10:
+        minuto = f'0{minuto}'
+    segundo = date.second
+    if segundo < 10:
+        segundo = f'0{segundo}'
+
+    horastr = f'{hora}:{minuto}:{segundo}'
+
+    datas  = {
+        "Data":datastr,
+        "Hora": horastr
+    } 
+    return datas
 
 
 ########################################################################################
