@@ -190,35 +190,30 @@ def comprar(lista_carros):
     modelo = inputText('Qual o modelo do carro quer comprar? ').title()
     achou = False
    
-            processoCompra()
-
-
     while not achou:
-        console.print('[on red]Carro não encontrado![on red/]')
-        modelo = inputText('Qual o modelo do carro comprar? ').title()
-        for carro in lista_carros:
+        for i, carro in enumerate(lista_carros):
             if carro['Modelo'] == modelo:
                 achou = True
-                processoCompra(lista_carros)
-        
-  
-         
+                quantidade = inputInt('Quantos carros quer comprar? ')
+                nova_quant = carro['Quantidade'] - quantidade
+                while quantidade <= 0 or nova_quant<0:
+                    console.print('[on red]Valor inválido! Tente novamente [on red/]')
+                    quantidade = inputInt('Quantos carros quer comprar? ')
+                    nova_quant = carro['Quantidade'] - quantidade
+                carro['Quantidade'] = nova_quant
+                console.log('[on green]Compra confirmada![on green/]')
+                email = inputEmail('Digite seu e-mail para receber a nota fiscal: ')
+                break
+
+       
+        console.print('[on red]Carro não encontrado![on red/]')
+        modelo = inputText('Qual o modelo do carro comprar? ').title()
+                
+            
             
 
 
-def processoCompra(lista_carros):
-     for i, carro in enumerate(lista_carros):
-        if carro['Modelo'] == modelo:
-            achou = True
-            quantidade = inputInt('Quantos carros quer comprar? ')
-            nova_quant = carro['Quantidade'] - quantidade
-            while quantidade <= 0 or nova_quant<0:
-                console.print('[on red]Valor inválido! Tente novamente [on red/]')
-                quantidade = inputInt('Quantos carros quer comprar? ')
-                nova_quant = carro['Quantidade'] - quantidade
-            carro['Quantidade'] = nova_quant
-            console.log('[on green]Compra confirmada![on green/]')
-            email = inputEmail('Digite seu e-mail para receber a nota fiscal: ')
+
 
 #############INPUTS##################################################################
 def inputEscolha(texto, escolhas, erro):
