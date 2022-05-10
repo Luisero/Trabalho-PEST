@@ -1,3 +1,4 @@
+from time import sleep
 from emailSender import enviarEmail
 from rich.console import Console
 from rich.table import Table
@@ -19,7 +20,7 @@ Quantidade: int
 
 carros = list()
 clear() 
-#boasVindas('Bem vindo!','blue')
+boasVindas('Bem vindo!','blue')
 def menu():
    while True:
         
@@ -175,7 +176,7 @@ def consultar(cliente_pcd):
             carros_pcd.append(carro) 
         else:
             carros_nopcd.append(carro)
-    if carros_pcd: #se o cliente for pcd
+    if cliente_pcd: #se o cliente for pcd
         printCarros(carros_pcd)
         quercomprar = inputEscolha('Quer comprar um carro? [green][0]Sim[green/] [blue][1]Não[blue/]', escolhas=['0','1'], erro='[on red]Valor inválido! Tente novamente [on red/]')
         if quercomprar == '0':
@@ -183,9 +184,15 @@ def consultar(cliente_pcd):
             
         else:
             console.print('[on yellow]Tudo bem[on yellow/]')
-        printCarros(carros_pcd)
+       
     else:#se o cliente não for pcd
         printCarros(carros_nopcd)
+        quercomprar = inputEscolha('Quer comprar um carro? [green][0]Sim[green/] [blue][1]Não[blue/]', escolhas=['0','1'], erro='[on red]Valor inválido! Tente novamente [on red/]')
+        if quercomprar == '0':
+           comprar(carros_nopcd) 
+            
+        else:
+            console.print('[on yellow]Tudo bem[on yellow/]')
 
 def comprar(lista_carros):
     
@@ -205,7 +212,13 @@ def comprar(lista_carros):
                 carro['Quantidade'] = nova_quant
                 email_d = inputEmail('Digite seu e-mail para receber a nota fiscal')
                 console.log('[on green]Compra confirmada![on green/]')
-
+                num_pedido = 0
+                with open('ex02/pedido.txt','r') as f:
+                    num_pedido = f.readline()
+                    num_pedido = int(num_pedido)+ 1
+                    with open('ex02/pedido.txt','w') as r:
+                        r.write(str(num_pedido))
+                
                 preco = carro['Preco']* quantidade
                 datas = pegarData()
                 from infos import email, senha #email e senha do remetente
@@ -218,10 +231,11 @@ def comprar(lista_carros):
                 <ul style="list-style-type: none;">
                     <li>Marca: {carro['Marca']}</li>
                     <li>Modelo: {carro['Modelo']}</li>
-                    <li>Preco: R${carro['Preco']}</li>
+                    <li>Preco: <strong>R${carro['Preco']}</strong></li>
                     <li>Quantidade: {quantidade}</li>
                     <li>Para PCD? {carro['Para_PCD']}</li>
                     <li>Compra feita no dia {datas['Data']} na hora {datas['Hora']}</li>
+                    <li>Número do pedido: <strong>{num_pedido}</strong></li>
 
                 </ul>
 
@@ -229,7 +243,7 @@ def comprar(lista_carros):
                 <p><strong>&copy;Concessionária Sol Quente</strong></p>
                 '''
                 enviarEmail(email_r,senha_r, mensagem_html,email_d,'Carro novo para você!')
-               
+                
                 break
 
         if not achou:
