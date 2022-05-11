@@ -17,7 +17,6 @@ Preco: float
 Quantidade: int
 '''
 
-
 carros = list()
 clear() 
 boasVindas('Bem vindo!','blue')
@@ -36,7 +35,7 @@ def menu():
             #menu de vendas
             continuar = 's'
             while continuar == 's':
-                modo = inputEscolha('O que deseja fazer? [green][0][green/]Cadastrar [blue][1][blue/]Editar ',escolhas=['0','1'], erro='Valor inválido! Tente novamente')
+                modo = inputEscolha('O que deseja fazer? [green][0][green/]Cadastrar [blue][1][blue/]Editar ',escolhas=['0','1'], erro='[on red]Valor inválido! Tente novamente[on red/]')
                 #modo cadastrar
                 if modo == '0':
                     cadastrar()
@@ -77,7 +76,7 @@ def cadastrar():
         mod_carro.clear()
 
         marca = inputText('Qual a marca do carro? ').title()
-        modelo = inputText('Qual o modelo do carro? ').title()
+        modelo = inputAllText('Qual o modelo do carro? ').title()
         #verificar se o modelo já está cadastrado
         igual = True
         while igual:
@@ -121,10 +120,11 @@ def cadastrar():
         mod_carro['Para_PCD'] = paraPCD
         mod_carro['Preco'] = preco
         carros.append(mod_carro.copy())
-        continuar = inputEscolha('Deseja continuar? [green][0]Sim[green/] [blue][1]Não[blue/]',escolhas=['0','1'], erro='[on red]Valor inválido! Tente novamente.[on red/]')
+        continuar = inputEscolha('Deseja continuar cadastrando carros? [green][0]Sim[green/] [blue][1]Não[blue/]',escolhas=['0','1'], erro='[on red]Valor inválido! Tente novamente.[on red/]')
         if continuar == '0':
             continuar = 's'
         else:
+            clear()
             continuar = 'n'
 
 
@@ -133,6 +133,9 @@ def editar():
     while continuar == '0':
         if len(carros) == 0:
             console.print('[on yellow]Nenhum carro para editar.[on yellow/]')
+            sleep(1)
+            clear()
+            break
         else: 
             clear()
             printCarros(carros)
@@ -177,26 +180,31 @@ def consultar(cliente_pcd):
         else:
             carros_nopcd.append(carro)
     if cliente_pcd: #se o cliente for pcd
-        printCarros(carros_pcd)
-        quercomprar = inputEscolha('Quer comprar um carro? [green][0]Sim[green/] [blue][1]Não[blue/]', escolhas=['0','1'], erro='[on red]Valor inválido! Tente novamente [on red/]')
-        if quercomprar == '0':
-           comprar(carros_pcd) 
-            
+        if len(carros_pcd) == 0:
+            console.print('[yellow]Nenhum carro pra comprar.[yellow/]')
         else:
-            console.print('[on yellow]Tudo bem[on yellow/]')
+            printCarros(carros_pcd)
+            quercomprar = inputEscolha('Quer comprar um carro? [green][0]Sim[green/] [blue][1]Não[blue/]', escolhas=['0','1'], erro='[on red]Valor inválido! Tente novamente [on red/]')
+            if quercomprar == '0':
+                comprar(carros_pcd) 
+                
+            else:
+                console.print('[on yellow]Tudo bem[on yellow/]')
        
     else:#se o cliente não for pcd
-        printCarros(carros_nopcd)
-        quercomprar = inputEscolha('Quer comprar um carro? [green][0]Sim[green/] [blue][1]Não[blue/]', escolhas=['0','1'], erro='[on red]Valor inválido! Tente novamente [on red/]')
-        if quercomprar == '0':
-           comprar(carros_nopcd) 
-            
+        if len(carros_nopcd) == 0:
+            console.print('[yellow]Nenhum carro pra comprar.[yellow/]')
         else:
-            console.print('[on yellow]Tudo bem[on yellow/]')
+            printCarros(carros_nopcd)
+            quercomprar = inputEscolha('Quer comprar um carro? [green][0]Sim[green/] [blue][1]Não[blue/]', escolhas=['0','1'], erro='[on red]Valor inválido! Tente novamente [on red/]')
+            if quercomprar == '0':
+                comprar(carros_nopcd) 
+            else:
+                console.print('[on yellow]Tudo bem[on yellow/]')
 
 def comprar(lista_carros):
     
-    modelo = inputText('Qual o modelo do carro quer comprar? ').title()
+    modelo = inputAllText('Qual o modelo do carro quer comprar? ').title()
     achou = False
    
     while not achou:
@@ -210,45 +218,72 @@ def comprar(lista_carros):
                     quantidade = inputInt('Quantos carros quer comprar? ')
                     nova_quant = carro['Quantidade'] - quantidade
                 carro['Quantidade'] = nova_quant
-                email_d = inputEmail('Digite seu e-mail para receber a nota fiscal')
-                console.log('[on green]Compra confirmada![on green/]')
-                num_pedido = 0
-                with open('ex02/pedido.txt','r') as f:
-                    num_pedido = f.readline()
-                    num_pedido = int(num_pedido)+ 1
-                    with open('ex02/pedido.txt','w') as r:
-                        r.write(str(num_pedido))
-                
-                preco = carro['Preco']* quantidade
+
+                preco = carro['Preco'] * quantidade
                 datas = pegarData()
-                from infos import email, senha #email e senha do remetente
-                email_r = email
-                senha_r = senha
-                mensagem_html = f'''
-                <h1>Compra de carro efetuada!</h1>
-                <h2>Parabéns! Você acaba de adquirir um {carro['Marca']} {carro['Modelo']} </h2> 
-                <p><strong>Informações: </strong></p>
-                <ul style="list-style-type: none;">
-                    <li>Marca: {carro['Marca']}</li>
-                    <li>Modelo: {carro['Modelo']}</li>
-                    <li>Preco: <strong>R${carro['Preco']}</strong></li>
-                    <li>Quantidade: {quantidade}</li>
-                    <li>Para PCD? {carro['Para_PCD']}</li>
-                    <li>Compra feita no dia {datas['Data']} na hora {datas['Hora']}</li>
-                    <li>Número do pedido: <strong>{num_pedido}</strong></li>
 
-                </ul>
+                num_pedido = 0
+                with open('ex02/pedido.txt', 'r') as f:
+                    num_pedido = f.readline()
+                    num_pedido = int(num_pedido) + 1
+                    with open('ex02/pedido.txt', 'w') as r:
+                        r.write(str(num_pedido))
+                #Nota fiscal
+                nota_fiscal = Table(title='Nota fiscal')
+                nota_fiscal.add_column('Marca')
+                nota_fiscal.add_column('Modelo')
+                nota_fiscal.add_column('Preço')
+                nota_fiscal.add_column('Quantidade')
+                nota_fiscal.add_column('Para PCD?')
+                nota_fiscal.add_column('Número do pedido.')
+                nota_fiscal.add_column('Data')
+                nota_fiscal.add_row(carro['Marca'],carro['Modelo'], str(carro['Preco']), str(quantidade), carro['Para_PCD'], str(num_pedido), str(datas['Data']))
+                ################################
 
-                <p>Concessionária Sol Quente: saia da sombra com a gente.</p>
-                <p><strong>&copy;Concessionária Sol Quente</strong></p>
-                '''
-                enviarEmail(email_r,senha_r, mensagem_html,email_d,'Carro novo para você!')
+                res_nota = inputEscolha('Deseja receber a nota fiscal por email? [green][0]Sim[green/] [blue][1]Não[blue/]', erro='[on red]Valor inválido! Digite novamente.[on red/]', escolhas=['0','1'])
+                if res_nota == '0':
+                    from infos import email, senha # email e senha do remetente
+                    email_r = email
+                    senha_r = senha
+                    mensagem_html = f'''
+                    <h1>Compra de carro efetuada!</h1>
+                    <h2>Parabéns! Você acaba de adquirir um {carro['Marca']} {carro['Modelo']} </h2> 
+                    <p><strong>Informações: </strong></p>
+                    <ul style="list-style-type: none;">
+                        <li>Marca: <strong>{carro['Marca']}</strong></li>
+                        <li>Modelo: <strong>{carro['Modelo']}</strong></li>
+                        <li>Preco: <strong>R${carro['Preco']}</strong></li>
+                        <li>Quantidade: <strong>{quantidade}</strong></li>
+                        <li>Para PCD? <strong>{carro['Para_PCD']}</strong></li>
+                        <li>Compra feita no dia <time>{datas['Data']}</time> e na hora <time>{datas['Hora']}</time></li>
+                        <li>Número do pedido: <strong>{num_pedido}</strong></li>
+
+                    </ul>
+
+                    <p>Concessionária Sol Quente: saia da sombra com a gente.</p>
+                    <p><em><strong>&copy;Concessionária Sol Quente</strong></em></p>
+                    '''
+                    email_d= inputEmail('Digite seu e-mail para receber a nota fiscal')
+                    def enviandoEmail():
+                        for i in range(0,1):
+                            console.log('Enviando e-mail')
+                            enviarEmail(email_r,senha_r, mensagem_html,email_d,'Carro novo para você!')
+                            console.log('Email enviado!')
+
+                    with console.status('[green]Carregando[green/]') as e:
+                        enviandoEmail()
+                    console.print(nota_fiscal)
+                else:
+                    console.print(nota_fiscal)
+                    
+                console.log('[on green]Compra confirmada![on green/]')
+                
                 
                 break
 
         if not achou:
                 console.print('[on red]Carro não encontrado![on red/]')
-                modelo = inputText('Qual o modelo do carro comprar? ').title()
+                modelo = inputAllText('Qual o modelo do carro comprar? ').title()
     
 
    
@@ -281,7 +316,13 @@ def inputText(texto):
                 res = Prompt.ask('[on red]Valor inválido! Tente novamente.[on red/] ')
             else:
                 return res
-
+def inputAllText(texto):
+    res = Prompt.ask(texto).title()
+    while True:
+            if isSpace(res):
+                res = Prompt.ask('[on red]Valor inválido! Tente novamente.[on red/] ')
+            else:
+                return res
             
     
 def inputInt(texto):
@@ -334,8 +375,9 @@ def inputEmail(texto):
         if len(email) == 2:
             for i in range(0,2):
                 email[i] = email[i].split('.com')
-            if len(email[1]) == 2:
+            if len(email[1]) == 2 and not isSpace(email[0][0]) and not isSpace(email[1][0]):
                 #certo
+
                 return f'{email[0][0]}@{email[1][0]}.com'
             else:
                 console.print('[on red]Valor inválido! Tente novamente.[on red/]')
