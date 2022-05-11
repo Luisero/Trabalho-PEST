@@ -11,9 +11,9 @@ def menu():
     tabela_menu.add_column('Cadastrar produto')
     tabela_menu.add_column('Editar produto')
     tabela_menu.add_column('Fazer compra')
-    tabela_menu.add_row('[1]','[2]','[2]')
-
-    a = inputnum('[1] Cadastrar produto \n[2] Editar produto \n[3] Fazer compra \n -> ', erro = 'Digite somente números! Tente novamente! \n[1] Cadastrar produto \n[2] Editar produto \n[3] Fazer compra \n -> ')
+    tabela_menu.add_row('[1]','[2]','[3]')
+    console.print(tabela_menu)
+    a = inputnum('Digite aqui: ', erro = 'Digite somente números! Tente novamente!')
     if a == 1:
         cadastrar()
     elif len(controle) != 0:
@@ -92,9 +92,9 @@ def editar():
                     while qualeditar != 1 and qualeditar != 2 and qualeditar != 3:
                         print('Função não encontrada! \nTente novamente!')
                         editar()
+preco_compra = 0
 def comprar():
     global a, preco_compra, compra
-    preco_compra = 0
     continuar = 'S'
     while a == 3 and continuar == 'S':
         tabela()
@@ -112,16 +112,14 @@ def comprar():
             elif l == 'S':
                 quantidade()
 def tabela():
-    print('\n')
-    print('-'*73)
-    print('|     | Produto               | Preço                 | Quantidade            ')
-    for a, b in enumerate(controle):
-        print(f'| {a:>3}', end = ' ')
-        for d in b.values():
-            print(f'| {str(d):<21}', end = ' ')
-        print('')
-    print('\n')
-
+    tabela_prod = Table(title='Produtos')
+    tabela_prod.add_column('Produto')
+    tabela_prod.add_column('Preço')
+    tabela_prod.add_column('Quantidade')
+    
+    for i, prod in enumerate(controle):
+        tabela_prod.add_row(prod['Produto'], str(prod['Quantidade']), str(prod['Preço']))
+    console.print(tabela_prod)
 def quantidade():
     global compra, preco_compra
     qualquant = inputnum(f'Quantos {controle[compra]["Produto"]} você quer comprar? ', erro = f'Digite somente números! Tente novamente! \nQuantos {controle[compra]["Produto"]} você quer comprar? ')
