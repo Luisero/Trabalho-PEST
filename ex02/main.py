@@ -18,11 +18,11 @@ Quantidade: int
 '''
 
 carros = list()
-clear() 
+clear()
 boasVindas('Bem vindo!','blue')
 def menu():
    while True:
-        
+
         menu = Table(title='Concessionária Sol quente')
         menu.add_column('Menu vendedor')
         menu.add_column('Menu comprador')
@@ -39,19 +39,19 @@ def menu():
                 #modo cadastrar
                 if modo == '0':
                     cadastrar()
-                    
+
                 else: #modo editar
                     editar()
-                break    
+                break
 
 
-        else: #modo cliente 
+        else: #modo cliente
             res = inputEscolha('Deseja consultar um carro? [green][0]Sim[green/] [blue][1]Sair ao menu[blue/]', escolhas=['0','1'], erro='[on red]Valor inválido. Tente novamente[on red/]')
 
             if res == '1': #sair ao menu
                 pass
             else: #Consultar o carro
-    
+
                 if len(carros) == 0:
                     console.print('[yellow]Nenhum carro disponível.[yellow/]')
                 else:
@@ -62,8 +62,8 @@ def menu():
                         cliente_pcd = False
 
                     consultar(cliente_pcd)
-                     
-                    
+
+
 
 
 
@@ -90,7 +90,7 @@ def cadastrar():
                             igual = False
                     else:
                         igual = False
-                
+
             else:
                 igual = False
 
@@ -136,7 +136,7 @@ def editar():
             sleep(1)
             clear()
             break
-        else: 
+        else:
             clear()
             printCarros(carros)
             modelo = inputText('Qual o modelo do carro para editar? ').title()
@@ -168,7 +168,7 @@ def editar():
                             quantidade = inputInt('Digite a nova quantidade')
                         modelo_carro['Quantidade'] = quantidade
         continuar = inputEscolha('Deseja continuar editando carros? [green][0]Sim[green/] [blue][1]Não[blue/]',escolhas=['0','1'], erro='[on red]Valor inválido[on red/]')
-                
+
 def consultar(cliente_pcd):
     clear()
     carros_pcd = []
@@ -176,7 +176,7 @@ def consultar(cliente_pcd):
 
     for carro in carros: #cria uma lista de carros pcd e de não pcd
         if carro['Para_PCD'] == 'Sim':
-            carros_pcd.append(carro) 
+            carros_pcd.append(carro)
         else:
             carros_nopcd.append(carro)
     if cliente_pcd: #se o cliente for pcd
@@ -186,11 +186,11 @@ def consultar(cliente_pcd):
             printCarros(carros_pcd)
             quercomprar = inputEscolha('Quer comprar um carro? [green][0]Sim[green/] [blue][1]Não[blue/]', escolhas=['0','1'], erro='[on red]Valor inválido! Tente novamente [on red/]')
             if quercomprar == '0':
-                comprar(carros_pcd) 
-                
+                comprar(carros_pcd)
+
             else:
                 console.print('[on yellow]Tudo bem[on yellow/]')
-       
+
     else:#se o cliente não for pcd
         if len(carros_nopcd) == 0:
             console.print('[yellow]Nenhum carro pra comprar.[yellow/]')
@@ -198,15 +198,15 @@ def consultar(cliente_pcd):
             printCarros(carros_nopcd)
             quercomprar = inputEscolha('Quer comprar um carro? [green][0]Sim[green/] [blue][1]Não[blue/]', escolhas=['0','1'], erro='[on red]Valor inválido! Tente novamente [on red/]')
             if quercomprar == '0':
-                comprar(carros_nopcd) 
+                comprar(carros_nopcd)
             else:
                 console.print('[on yellow]Tudo bem[on yellow/]')
 
 def comprar(lista_carros):
-    
+
     modelo = inputAllText('Qual o modelo do carro quer comprar? ').title()
     achou = False
-   
+
     while not achou:
         for i, carro in enumerate(lista_carros):
             if carro['Modelo'] == modelo:
@@ -221,12 +221,13 @@ def comprar(lista_carros):
 
                 preco = carro['Preco'] * quantidade
                 datas = pegarData()
-
+                tamanho_arquivo = len(__file__)
+                path = __file__[0: tamanho_arquivo-7]
                 num_pedido = 0
-                with open('ex02/pedido.txt', 'r') as f:
+                with open(f'{path}pedido.txt', 'r') as f:
                     num_pedido = f.readline()
                     num_pedido = int(num_pedido) + 1
-                    with open('ex02/pedido.txt', 'w') as r:
+                    with open(f'{path}pedido.txt', 'w') as r:
                         r.write(str(num_pedido))
                 #Nota fiscal
                 nota_fiscal = Table(title='Nota fiscal')
@@ -275,18 +276,18 @@ def comprar(lista_carros):
                     console.print(nota_fiscal)
                 else:
                     console.print(nota_fiscal)
-                    
+
                 console.log('[on green]Compra confirmada![on green/]')
-                
-                
+
+
                 break
 
         if not achou:
                 console.print('[on red]Carro não encontrado![on red/]')
                 modelo = inputAllText('Qual o modelo do carro comprar? ').title()
-    
 
-   
+
+
 
 
 
@@ -302,7 +303,7 @@ def inputEscolha(texto, escolhas, erro):
             return escolhas[0]
         else:
             return escolhas[1]
-    
+
 
 def inputText(texto):
     res = Prompt.ask(texto).title()
@@ -323,8 +324,8 @@ def inputAllText(texto):
                 res = Prompt.ask('[on red]Valor inválido! Tente novamente.[on red/] ')
             else:
                 return res
-            
-    
+
+
 def inputInt(texto):
      while True:
         res = Prompt.ask(texto)
@@ -334,8 +335,8 @@ def inputInt(texto):
             console.print('[on red]Valor inválido! Tente novamente.[on red/] ')
         if(type(res) == int):
             return res
-             
-        
+
+
 
 def inputFloat(texto):
     res = Prompt.ask(texto)
@@ -347,7 +348,7 @@ def inputFloat(texto):
             res = Prompt.ask(texto)
         if(type(res) == float):
             return res
-            
+
 def isSpace(texto):
     espacos = 0
     for i in range(0, len(texto)):
@@ -377,43 +378,23 @@ def inputEmail(texto):
                 email[i] = email[i].split('.com')
             if len(email[1]) == 2 and not isSpace(email[0][0]) and not isSpace(email[1][0]):
                 #certo
-
                 return f'{email[0][0]}@{email[1][0]}.com'
             else:
                 console.print('[on red]Valor inválido! Tente novamente.[on red/]')
-            
 
-            
-        
+
+
 def pegarData():
     import datetime
     date = datetime.datetime.now()
 
-    dia = date.day
-    if dia <10:
-        dia = f'0{dia}'
-    mes = f'0{date.month}'
-    ano = date.year
+    datastr = date.strftime('%d/%m/%Y')
+    horastr = date.strftime('%H:%S')
 
-    datastr = f'{dia}/{mes}/{ano}'
-
-    hora = date.hour
-    if hora < 10:
-        hora = f'0{hora}'
-
-    minuto = date.minute
-    if minuto < 10:
-        minuto = f'0{minuto}'
-    segundo = date.second
-    if segundo < 10:
-        segundo = f'0{segundo}'
-
-    horastr = f'{hora}:{minuto}:{segundo}'
-
-    datas  = {
-        "Data":datastr,
+    datas = {
+        "Data": datastr,
         "Hora": horastr
-    } 
+    }
     return datas
 
 
@@ -434,4 +415,4 @@ def printCarros(lista_carro):
             pcd_text = f'[yellow]{modelo["Para_PCD"]}[yellow/]'
         menu_carros.add_row(modelo['Marca'], modelo['Modelo'], '[green]R$'+str(modelo['Preco'])+'[green/]', '[blue]'+str(modelo['Quantidade'])+'[blue/]', 'R$'+str(modelo['Valor_fabrica']), pcd_text)
     console.print(menu_carros)
-menu() 
+menu()

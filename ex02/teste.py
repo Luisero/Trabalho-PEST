@@ -1,4 +1,5 @@
-email = input().lower()
+
+'''email = input().lower()
 email = email.split('@')
 
 
@@ -9,4 +10,11 @@ if len(email) == 2:
         print('Email certin')
 
 else:
-    print('Valor invalido')
+    print('Valor invalido')'''
+import os
+
+print(os.getcwd())
+print(__file__)
+
+tamanho = len(__file__)
+print(__file__[0:tamanho-8])
