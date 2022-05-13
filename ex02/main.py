@@ -66,15 +66,17 @@ def menu():
 
 
 
-
-
-
-
 def cadastrar():
     continuar  = 's'
     while continuar == 's':
         mod_carro.clear()
 
+        paraPCD = inputEscolha('Esse carro é para PCD? [green][0]Sim[green/] [blue][1]Não[blue/]',escolhas=['0','1'], erro='Valor inválido! Tente novamente')
+        if paraPCD == '0':
+            paraPCD='Sim'
+        else:
+            paraPCD = 'Não'
+        preco = 0
         marca = inputText('Qual a marca do carro? ').title()
         modelo = inputAllText('Qual o modelo do carro? ').title()
         #verificar se o modelo já está cadastrado
@@ -82,11 +84,11 @@ def cadastrar():
         while igual:
             if len(carros) != 0:
                 for carro in carros:
-                    if modelo == carro['Modelo']:
+                    if modelo == carro['Modelo'] and carro['Para_PCD'] == paraPCD:
                         igual = True
                         console.print('[on red]Carro já cadastrado![on red/]')
-                        modelo = inputText('Qual o modelo do carro? ').title()
-                        if modelo != carro['Modelo']:
+                        modelo = inputAllText('Qual o modelo do carro? ').title()
+                        if paraPCD != carro['Para_PCD'] :
                             igual = False
                     else:
                         igual = False
@@ -102,12 +104,6 @@ def cadastrar():
         while quantidade <=0:
             console.print('[on red]Valor inválido. Tente novamente[on red/]]')
             quantidade = inputInt('Qual a quantidade?')
-        paraPCD = inputEscolha('Esse carro é para PCD? [green][0]Sim[green/] [blue][1]Não[blue/]',escolhas=['0','1'], erro='Valor inválido! Tente novamente')
-        if paraPCD == '0':
-            paraPCD='Sim'
-        else:
-            paraPCD = 'Não'
-        preco = 0
         if paraPCD=='Sim':
             preco = f'{valor_fabrica*1.15:.2f}' #o preço é o valor de fabrica + 15%
         else:
@@ -123,35 +119,78 @@ def cadastrar():
         continuar = inputEscolha('Deseja continuar cadastrando carros? [green][0]Sim[green/] [blue][1]Não[blue/]',escolhas=['0','1'], erro='[on red]Valor inválido! Tente novamente.[on red/]')
         if continuar == '0':
             continuar = 's'
+            clear()
         else:
             clear()
             continuar = 'n'
 
 
 def editar():
+    carros_pcd = []
+    carros_nopcd = []
+
+    for carro in carros: #cria uma lista de carros pcd e de não pcd
+        if carro['Para_PCD'] == 'Sim':
+            carros_pcd.append(carro)
+        else:
+            carros_nopcd.append(carro)
     continuar = '0'
     while continuar == '0':
         if len(carros) == 0:
-            console.print('[on yellow]Nenhum carro para editar.[on yellow/]')
+            console.print('[yellow]Nenhum carro para editar.[yellow/]')
             sleep(1)
             clear()
             break
         else:
             clear()
             printCarros(carros)
-            modelo = inputText('Qual o modelo do carro para editar? ').title()
+            
+            paraPCD = inputEscolha('Esse carro é para PCD? [green][0]Sim[green/] [blue][1]Não[blue/]',escolhas=['0','1'], erro='Valor inválido! Tente novamente')
+
+            if paraPCD == '0':
+                paraPCD='Sim'
+            else:
+                paraPCD = 'Não'
+
+            if paraPCD == 'Sim' and len(carros_pcd) == 0:
+                console.print('[yellow]Nenhum carro para editar.[yellow/]')
+                sleep(2)
+                clear()
+                break
+            elif len(carros_nopcd) == 0:
+                console.print('[yellow]Nenhum carro para editar.[yellow/]')
+                sleep(2)
+                clear()
+                break
+            modelo = inputAllText('Qual o modelo do carro para editar? ').title()
+            
             achou = False
-            for carro in carros:
-                if carro['Modelo'] == modelo:
-                    achou = True
-            while not achou:
-                console.print('[on red]Carro não encontrado![on red/]')
-                modelo = inputText('Qual o modelo do carro para editar? ').title()
-                for carro in carros:
-                    if carro['Modelo'] == modelo:
+            if paraPCD == 'Sim':
+                for carro in carros_pcd:
+                    if carro['Modelo'] == modelo and carro['Para_PCD'] == paraPCD:
                         achou = True
+            
+                while not achou:
+                    console.print('[on red]Carro não encontrado![on red/]')
+                    modelo = inputAllText('Qual o modelo do carro para editar? ').title()
+                    for carro in carros_pcd:
+                        if carro['Modelo'] == modelo and carro['Para_PCD']:
+                            achou = True  
+            else:
+                for carro in carros_nopcd:
+                    if carro['Modelo'] == modelo and carro['Para_PCD'] == paraPCD:
+                        achou = True
+            
+                while not achou:
+                    console.print('[on red]Carro não encontrado![on red/]')
+                    modelo = inputAllText('Qual o modelo do carro para editar? ').title()
+                    for carro in carros_nopcd:
+                        if carro['Modelo'] == modelo and carro['Para_PCD']:
+                            achou = True  
+                
+            
             for i,modelo_carro in enumerate(carros):
-                if modelo_carro['Modelo'] == modelo:
+                if modelo_carro['Modelo'] == modelo and modelo_carro['Para_PCD'] == paraPCD:
                     achou = True
                     chave = inputEscolha('O que você que editar? [blue][Preco][blue/] [green][Quantidade][green/]', escolhas=['Preco','Quantidade'], erro='[on red]Valor inválido![on red/]')
                     if chave == 'Preco':
@@ -167,7 +206,10 @@ def editar():
                             console.print('[on red]Valor inválido. Tente novamente[on red/]]')
                             quantidade = inputInt('Digite a nova quantidade')
                         modelo_carro['Quantidade'] = quantidade
+                    paraPCD = ''
+        
         continuar = inputEscolha('Deseja continuar editando carros? [green][0]Sim[green/] [blue][1]Não[blue/]',escolhas=['0','1'], erro='[on red]Valor inválido[on red/]')
+    clear()
 
 def consultar(cliente_pcd):
     clear()
@@ -189,7 +231,7 @@ def consultar(cliente_pcd):
                 comprar(carros_pcd)
 
             else:
-                console.print('[on yellow]Tudo bem[on yellow/]')
+                console.print('[yellow]Tudo bem[yellow/]')
 
     else:#se o cliente não for pcd
         if len(carros_nopcd) == 0:
@@ -200,7 +242,7 @@ def consultar(cliente_pcd):
             if quercomprar == '0':
                 comprar(carros_nopcd)
             else:
-                console.print('[on yellow]Tudo bem[on yellow/]')
+                console.print('[yellow]Tudo bem[yellow/]')
 
 def comprar(lista_carros):
 
@@ -273,7 +315,9 @@ def comprar(lista_carros):
 
                     with console.status('[green]Carregando[green/]') as e:
                         enviandoEmail()
+                    
                     console.print(nota_fiscal)
+                    
                 else:
                     console.print(nota_fiscal)
 
@@ -307,21 +351,26 @@ def inputEscolha(texto, escolhas, erro):
 
 def inputText(texto):
     res = Prompt.ask(texto).title()
+   
+
     while True:
         try:
             res = int(res)
             res = Prompt.ask('[on red]Valor inválido! Tente novamente.[on red/] ')
 
         except:
-            if isSpace(res):
-                res = Prompt.ask('[on red]Valor inválido! Tente novamente.[on red/] ')
+            if isSpace(res) :
+                console.print('[on red]Valor inválido! Tente novamente.[on red/] ')
+                res = Prompt.ask(texto)
             else:
                 return res
 def inputAllText(texto):
+  
     res = Prompt.ask(texto).title()
     while True:
             if isSpace(res):
-                res = Prompt.ask('[on red]Valor inválido! Tente novamente.[on red/] ')
+                console.print('[on red]Valor inválido! Tente novamente.[on red/] ')
+                res = Prompt.ask(texto)
             else:
                 return res
 

@@ -10,11 +10,22 @@ if len(email) == 2:
         print('Email certin')
 
 else:
-    print('Valor invalido')'''
+    print('Valor invalido')
+    
+
 import os
 
 print(os.getcwd())
 print(__file__)
 
 tamanho = len(__file__)
-print(__file__[0:tamanho-8])
+print(__file__[0:tamanho-8])'''
+
+special_characters = "!@#$%^&*()-+?_=,<>/."
+s=input()
+# Example: $tackoverflow
+
+if any(c in special_characters for c in s):
+    print("yes")
+else:
+    print("no")
