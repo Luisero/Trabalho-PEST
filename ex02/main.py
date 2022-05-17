@@ -261,7 +261,7 @@ def comprar(lista_carros):
                     nova_quant = carro['Quantidade'] - quantidade
                 carro['Quantidade'] = nova_quant
 
-                preco = carro['Preco'] * quantidade
+                preco = float(carro['Preco']) * quantidade
                 datas = pegarData()
                 tamanho_arquivo = len(__file__)
                 path = __file__[0: tamanho_arquivo-7]
@@ -280,7 +280,7 @@ def comprar(lista_carros):
                 nota_fiscal.add_column('Para PCD?')
                 nota_fiscal.add_column('Número do pedido.')
                 nota_fiscal.add_column('Data')
-                nota_fiscal.add_row(carro['Marca'],carro['Modelo'], str(carro['Preco']), str(quantidade), carro['Para_PCD'], str(num_pedido), str(datas['Data']))
+                nota_fiscal.add_row(carro['Marca'],carro['Modelo'], str(preco), str(quantidade), carro['Para_PCD'], str(num_pedido), str(datas['Data']))
                 ################################
 
                 res_nota = inputEscolha('Deseja receber a nota fiscal por email? [green][0]Sim[green/] [blue][1]Não[blue/]', erro='[on red]Valor inválido! Digite novamente.[on red/]', escolhas=['0','1'])
@@ -295,7 +295,7 @@ def comprar(lista_carros):
                     <ul style="list-style-type: none;">
                         <li>Marca: <strong>{carro['Marca']}</strong></li>
                         <li>Modelo: <strong>{carro['Modelo']}</strong></li>
-                        <li>Preco: <strong>R${carro['Preco']}</strong></li>
+                        <li>Preco: <strong>R${preco}</strong></li>
                         <li>Quantidade: <strong>{quantidade}</strong></li>
                         <li>Para PCD? <strong>{carro['Para_PCD']}</strong></li>
                         <li>Compra feita no dia <time>{datas['Data']}</time> e na hora <time>{datas['Hora']}</time></li>
