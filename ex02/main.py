@@ -165,28 +165,18 @@ def editar():
             modelo = inputAllText('Qual o modelo do carro para editar? ').title()
             
             achou = False
-            if paraPCD == 'Sim':
-                for carro in carros_pcd:
-                    if carro['Modelo'] == modelo and carro['Para_PCD'] == paraPCD:
-                        achou = True
-            
-                while not achou:
-                    console.print('[on red]Carro não encontrado![on red/]')
-                    modelo = inputAllText('Qual o modelo do carro para editar? ').title()
-                    for carro in carros_pcd:
-                        if carro['Modelo'] == modelo and carro['Para_PCD']:
-                            achou = True  
-            else:
-                for carro in carros_nopcd:
-                    if carro['Modelo'] == modelo and carro['Para_PCD'] == paraPCD:
-                        achou = True
-            
-                while not achou:
-                    console.print('[on red]Carro não encontrado![on red/]')
-                    modelo = inputAllText('Qual o modelo do carro para editar? ').title()
-                    for carro in carros_nopcd:
-                        if carro['Modelo'] == modelo and carro['Para_PCD']:
-                            achou = True  
+       
+            for carro in carros:
+                if carro['Modelo'] == modelo and carro['Para_PCD'] == paraPCD:
+                    achou = True
+        
+            while not achou:
+                console.print('[on red]Carro não encontrado![on red/]')
+                modelo = inputAllText('Qual o modelo do carro para editar? ').title()
+                for carro in carros:
+                    if carro['Modelo'] == modelo and carro['Para_PCD']:
+                        achou = True  
+          
                 
             
             for i,modelo_carro in enumerate(carros):
@@ -217,10 +207,11 @@ def consultar(cliente_pcd):
     carros_nopcd = []
 
     for carro in carros: #cria uma lista de carros pcd e de não pcd
-        if carro['Para_PCD'] == 'Sim':
+        if carro['Para_PCD'] == 'Sim' and carro['Quantidade'] > 0:
             carros_pcd.append(carro)
         else:
-            carros_nopcd.append(carro)
+            if carro['Quantidade'] > 0:
+                carros_nopcd.append(carro)
     if cliente_pcd: #se o cliente for pcd
         if len(carros_pcd) == 0:
             console.print('[yellow]Nenhum carro pra comprar.[yellow/]')
